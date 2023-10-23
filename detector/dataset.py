@@ -35,6 +35,7 @@ class CallistoDataModule(trl.LightningDataModule):
                 antialias=True,
             ),
             DecibelScale(),
+            SpecNorm(),
         ]
         train_transforms = [
             RandomRoll(0.0, 0.9, p=0.6),
@@ -151,6 +152,23 @@ class DecibelScale(tvt.Transform):
 
     def forward(self, data):
         return (data - tr.min(data)) * 2500.0 / 25.4
+
+class SpecNorm(tvt.Transform):
+
+    def __init__(
+        self,
+        min=-1.0,
+        max=4.0,
+    ):
+        super().__init__()
+        self.min = min
+        self.max = max
+
+    def forward(self, sgram):
+        filt = sgram - tr.median(sgram, -1, keepdims=True).values
+        clip = tr.clamp(filt, self.min, self.max)
+        norm = (clip - self.min) / (self.max - self.min)
+        return (norm - tr.mean(norm)) / tr.std(norm)
 
 class RandomRoll(tvt.Transform):
 
