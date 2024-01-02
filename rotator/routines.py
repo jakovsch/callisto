@@ -1,8 +1,7 @@
 import astropy.units as u
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz, Angle
-from astropy.coordinates import angles as kutevi
 from astropy.time import Time
-from datetime import datetime, timedelta
+from datetime import datetime
 import RPi.GPIO as g
 from constants import SLEEP_TIME
 import time
