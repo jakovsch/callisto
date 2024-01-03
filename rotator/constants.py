@@ -30,7 +30,7 @@ DEG_PER_SECOND = 1/240
 PRINT_FREQ = 5
 
 # Absolute RA SM position when in home position
-HA_HOME_ABS_POSITION = int(STEPS_PER_ROT * (1/4))
+HA_HOME_ABS_POSITION = int(STEPS_PER_ROT * (3/4))
 
 # Hour angle when in home position
 HOME_HA = 270 + 2.73
@@ -43,3 +43,15 @@ HOME_DEC = -45
 
 # Main menu output
 MENU_STRING = '===== eCALLISTO Master v1.0 =====\nt = track sun\nh = home\ngoto = GoTo\nm = manual control (RA and Dec)\ncoords = print current coords\n>>> '
+
+# Scheduler nominal start time hour and minute in local time zone
+START_TIME_HOUR = 7
+START_TIME_MINUTE = 0
+
+# Scheduler nominal stop time hour and minute in local time zone
+STOP_TIME_HOUR = 17
+STOP_TIME_MINUTE = 30
+
+# Time when callisto does a spectral overview
+OVS_TIMEH = 24
+OVS_TIMEM = 0
