@@ -44,11 +44,11 @@ HOME_DEC = -45
 # Main menu output
 MENU_STRING = '===== eCALLISTO Master v1.0 =====\nt = track sun\nh = home\ngoto = GoTo\nm = manual control (RA and Dec)\ncoords = print current coords\n>>> '
 
-# Scheduler nominal start time hour and minute in UTC
+# Scheduler nominal start time hour and minute in local timezone
 START_TIME_HOUR = 7
 START_TIME_MINUTE = 0
 
-# Scheduler nominal stop time hour and minute in UTC
+# Scheduler nominal stop time hour and minute in local timezone
 STOP_TIME_HOUR = 17
 STOP_TIME_MINUTE = 30
 

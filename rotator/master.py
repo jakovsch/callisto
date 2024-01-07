@@ -278,10 +278,9 @@ def gotoZenith():
     '''
     goes to zenith assuming antenna is at home position
     '''
-    
     global absoluteStepperState
-    
-    print('going to zenith, this will take approx. 3min')
+    now = datetime.utcnow()
+    print(f'{now}: going to zenith, this will take approx. 3min')
     zenithSteps = STEPS_PER_ROT / 4
     absoluteStepperState = moveStepper(0, int(zenithSteps), -1, absoluteStepperState)
     now = datetime.utcnow()
@@ -382,7 +381,7 @@ def waitForSchedule():
         timenow = datetime.now(tz)
         observer.date = timenow
         sun.compute(observer)
-        if timenow >= (starttime + timedelta(hours=-1)) and timenow <= (obsEndTime):
+        if timenow >= (starttime + timedelta(hours=-1)) and timenow.timestamp() <= (obsEndTime).timestamp():
             print(f'{timenow}: good morning world')
             break
         if timenow > ovstime + timedelta(minutes=-15) and timenow < ovstime + timedelta(minutes=15):
