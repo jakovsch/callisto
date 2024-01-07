@@ -3,7 +3,7 @@ import time
 import astropy.units as u
 from astropy.coordinates import EarthLocation, Angle
 from astropy.time import Time
-from datetime import datetime
+from datetime import datetime, timedelta
 import RPi.GPIO as g
 from constants import *
 from routines import cleanup, initMotors, moveStepper
@@ -74,10 +74,14 @@ def trackSun():
     
     waitForSchedule()
     print("Sun: ", sun.ra * RAD_TO_DEG_FACTOR, "Antenna: ", pointing[1])
-    if sun.alt > 0:
-        goto(sun.ra * RAD_TO_DEG_FACTOR, True)
+    while sun.alt < 0:
+        observer.date = datetime.now(tz)
+        sun.compute(observer)
+        time.sleep(30)    
+    goto(sun.ra * RAD_TO_DEG_FACTOR, True)
     print('tracking')
     
+    obsEndTime = datetime.now().replace(hour=STOP_TIME_HOUR, minute=STOP_TIME_MINUTE, second=0, microsecond=0)
     
     try:
         while True:
@@ -127,7 +131,7 @@ def trackSun():
                         printAllCoords(sunHourAngle, lha)
                         lastPrint = timenow
             cleanup(motors)
-            if timenow.hour >= STOP_TIME_HOUR and timenow.minute >= STOP_TIME_MINUTE:
+            if timenow.timestamp() > obsEndTime.timestamp():
                     home()
                     trackSun()
             
@@ -271,10 +275,18 @@ def goto(targetRa, tracking):
         return pointing[1]
 
 def gotoZenith():
-    home()
+    '''
+    goes to zenith assuming antenna is at home position
+    '''
+    
+    global absoluteStepperState
+    
+    print('going to zenith, this will take approx. 3min')
     zenithSteps = STEPS_PER_ROT / 4
-    moveStepper(0, zenithSteps, 1, absoluteStepperState)
-
+    absoluteStepperState = moveStepper(0, int(zenithSteps), -1, absoluteStepperState)
+    now = datetime.utcnow()
+    print(f'arrived at zenith at {now}(UTC)')
+    
 def manual(raSteps, decSteps):
     '''
     manually moves motors by a given amount of steps (direction is indicated with positive or negative values)
@@ -363,19 +375,23 @@ def waitForSunrise():
 
 def waitForSchedule():
     print('Waiting for next scheduled event')
+    starttime = datetime.now(tz).replace(hour=START_TIME_HOUR, minute=START_TIME_MINUTE, second=0, microsecond=0)
+    ovstime = datetime.now(tz).replace(hour=OVS_TIMEH, minute=OVS_TIMEM, second=0, microsecond=0)
+    obsEndTime = datetime.now().replace(hour=STOP_TIME_HOUR, minute=STOP_TIME_MINUTE, second=0, microsecond=0)
     while True:
         timenow = datetime.now(tz)
         observer.date = timenow
         sun.compute(observer)
-        if timenow.hour >= START_TIME_HOUR - 1 and sun.alt > 0:
-            print('good morning world')
+        if timenow >= (starttime + timedelta(hours=-1)) and timenow <= (obsEndTime):
+            print(f'{timenow}: good morning world')
             break
-        if timenow.hour >= OVS_TIMEH - 1 and timenow.hour < OVS_TIMEH + 1:
+        if timenow > ovstime + timedelta(minutes=-15) and timenow < ovstime + timedelta(minutes=15):
             gotoZenith()
-            if timenow.hour > OVS_TIMEH:
-                home()
+            time.sleep(1800)
+            print(f'{timenow}: going back home')
+            home()
         time.sleep(30)
-    return        
+    return
 # ===== Main loop manual control =====
 # try:
 #     while True:

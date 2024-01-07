@@ -44,14 +44,14 @@ HOME_DEC = -45
 # Main menu output
 MENU_STRING = '===== eCALLISTO Master v1.0 =====\nt = track sun\nh = home\ngoto = GoTo\nm = manual control (RA and Dec)\ncoords = print current coords\n>>> '
 
-# Scheduler nominal start time hour and minute in local time zone
+# Scheduler nominal start time hour and minute in UTC
 START_TIME_HOUR = 7
 START_TIME_MINUTE = 0
 
-# Scheduler nominal stop time hour and minute in local time zone
+# Scheduler nominal stop time hour and minute in UTC
 STOP_TIME_HOUR = 17
 STOP_TIME_MINUTE = 30
 
-# Time when callisto does a spectral overview
-OVS_TIMEH = 24
+# Time when callisto does a spectral overview hour:0..23
+OVS_TIMEH = 3
 OVS_TIMEM = 0
